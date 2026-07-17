@@ -1,0 +1,4 @@
+# editor / OS cruft
+*.bak
+*.swp
+.DS_Store
