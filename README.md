@@ -13,6 +13,7 @@ can run — or just copy-paste from — one group at a time**:
 | [`02-terminal.sh`](02-terminal.sh) | **Terminal** | fish, Ptyxis, Starship, modern CLI tools, yazi file manager |
 | [`03-development.sh`](03-development.sh) | **Development** | HTTP/DB clients, lazygit/lazydocker, VS Code, DBeaver, Bruno, PhpStorm |
 | [`04-games.sh`](04-games.sh) | **Games** | Steam + GameMode |
+| [`05-vpn.sh`](05-vpn.sh) | **VPN** | Windscribe client (GUI + CLI), Cloudflare WARP (CLI) |
 
 ## Quick start
 
@@ -27,6 +28,7 @@ chmod +x *.sh
 ./02-terminal.sh      # terminal power-up
 ./03-development.sh   # dev tools
 ./04-games.sh         # Steam
+./05-vpn.sh           # Windscribe + Cloudflare WARP
 ```
 
 Run them as your **normal user** (not with sudo) — each script calls `sudo`
@@ -172,6 +174,105 @@ __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia %command%   # run o
 
 Enable **Steam Play (Proton)** in Steam → Settings → Compatibility to run Windows
 games.
+
+---
+
+## VPN (`05-vpn.sh`)
+
+Two clients for two different jobs:
+
+| Client | What it's for | Pick a country? | Interface |
+|---|---|---|---|
+| **Windscribe** | Change your exit country, kill switch, ad/tracker blocking | **Yes** — 60+ countries | GUI + `windscribe-cli` |
+| **Cloudflare WARP** | Encrypt traffic + DNS through the nearest Cloudflare edge | No | `warp-cli` only |
+
+They **can't run at the same time** — both claim the default route. Disconnect
+one before connecting the other.
+
+### Windscribe
+
+Official desktop client, GUI plus the `windscribe-cli` command; WireGuard and
+OpenVPN are bundled, nothing else to install. Log in once (GUI: Applications →
+Windscribe → *Login*), after that the CLI is usually faster:
+
+```bash
+windscribe-cli login
+windscribe-cli locations           # all locations: city / ISO code / nickname
+windscribe-cli connect de          # by country, city, region or nickname
+windscribe-cli connect "Frankfurt"
+windscribe-cli connect best        # fastest server
+windscribe-cli status
+windscribe-cli disconnect
+```
+
+No need to disconnect before switching countries — a new `connect` just moves the
+tunnel. Extras: `windscribe-cli ip rotate` (new IP in the same country, Pro),
+`windscribe-cli connect de wireguard` (location + protocol), `windscribe-cli
+firewall on|off` (kill switch).
+
+The client keeps its own firewall rules, so **ufw stays exactly as `00-base.sh`
+configured it** — no ports to open.
+
+> **Updates:** Windscribe publishes no dnf repo — the script downloads the RPM
+> straight from windscribe.com, and `dnf upgrade` won't touch it. Just re-run
+> `./05-vpn.sh` when a new version comes out; the download URL always points at
+> the latest build.
+
+Troubleshooting: if the app says it can't reach its background service, check
+`systemctl status windscribe-helper`.
+
+### Cloudflare WARP
+
+Installed from Cloudflare's own dnf repo, so `dnf upgrade` keeps it current. No
+GUI on Linux — the `warp-svc` daemon plus `warp-cli`:
+
+```bash
+warp-cli registration new          # once, registers this device
+warp-cli connect
+warp-cli status
+warp-cli disconnect
+
+warp-cli mode warp                 # full tunnel (default)
+warp-cli mode doh                  # encrypt DNS only, traffic goes direct
+warp-cli mode warp+doh
+warp-cli tunnel protocol set MASQUE   # or WireGuard
+warp-cli dns families malware      # block malware domains at DNS level
+warp-cli registration license <KEY>   # activate WARP+
+```
+
+**You cannot choose a country.** WARP is anycast: you always dial the same
+address and routing lands you in the nearest WARP-enabled Cloudflare data center
+— sometimes not even the geographically closest one, since Cloudflare prioritizes
+reliability. Exit-point selection exists only in Zero Trust egress policies
+(paid, enterprise). Need a specific country → use Windscribe.
+
+Troubleshooting: `systemctl status warp-svc`.
+
+### Where am I coming out?
+
+```bash
+curl -s https://ipinfo.io/json | jq '.ip, .country, .city'
+curl -s https://www.cloudflare.com/cdn-cgi/trace | grep -E '^(colo|loc|warp)='
+# colo=WAW  loc=PL  warp=on   <- Cloudflare data center, exit country, WARP active
+```
+
+(`jq` comes from [`02-terminal.sh`](02-terminal.sh); drop it and read the raw JSON
+if you skipped that group.)
+
+### Prefer no proprietary client?
+
+Generate a WireGuard config in your Windscribe account (Config Generator) and
+hand it to NetworkManager, which speaks WireGuard natively — no extra package
+needed:
+
+```bash
+nmcli connection import type wireguard file ~/Downloads/Windscribe-XXX.conf
+nmcli connection up Windscribe-XXX
+```
+
+Lighter and wired into the GNOME VPN toggle (Settings → Network can't *edit* a
+WireGuard profile, only switch it on/off), but you lose the client's features
+(auto-connect per network, kill switch, R.O.B.E.R.T. blocking).
 
 ---
 
