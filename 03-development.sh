@@ -49,10 +49,9 @@ if ! command -v lazydocker >/dev/null 2>&1; then
 fi
 
 # --- PhpStorm (extracted into /opt) ---
-# NOTE: this URL is a fixed version and will go stale. Grab the current link from
-# https://www.jetbrains.com/phpstorm/download/
-PHPSTORM_URL="https://download.jetbrains.com/webide/PhpStorm-2025.2.5.tar.gz"
 if [[ ! -d /opt/PhpStorm-* ]]; then
+  echo "Fetching the latest PhpStorm download link..."
+  PHPSTORM_URL=$(curl -fsSL "https://data.services.jetbrains.com/products/releases?code=PS&latest=true&type=release" | jq -r '.PS[0].downloads.linux.link')
   tmp=$(mktemp -d)
   wget -O "$tmp/phpstorm.tar.gz" "$PHPSTORM_URL"
   sudo tar -xzf "$tmp/phpstorm.tar.gz" -C /opt

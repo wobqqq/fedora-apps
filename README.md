@@ -14,6 +14,7 @@ can run — or just copy-paste from — one group at a time**:
 | [`03-development.sh`](03-development.sh) | **Development** | HTTP/DB clients, lazygit/lazydocker, VS Code, DBeaver, Bruno, PhpStorm |
 | [`04-games.sh`](04-games.sh) | **Games** | Steam + GameMode |
 | [`05-vpn.sh`](05-vpn.sh) | **VPN** | Windscribe client (GUI + CLI), Cloudflare WARP (CLI) |
+| [`06-gemini-cli.sh`](06-gemini-cli.sh) | **AI CLI** | Node.js + Gemini CLI (AI coding agent in the terminal) |
 
 ## Quick start
 
@@ -29,6 +30,7 @@ chmod +x *.sh
 ./03-development.sh   # dev tools
 ./04-games.sh         # Steam
 ./05-vpn.sh           # Windscribe + Cloudflare WARP
+./06-gemini-cli.sh    # Node.js + Gemini CLI
 ```
 
 Run them as your **normal user** (not with sudo) — each script calls `sudo`
@@ -273,6 +275,96 @@ nmcli connection up Windscribe-XXX
 Lighter and wired into the GNOME VPN toggle (Settings → Network can't *edit* a
 WireGuard profile, only switch it on/off), but you lose the client's features
 (auto-connect per network, kill switch, R.O.B.E.R.T. blocking).
+
+---
+
+## AI CLI (`06-gemini-cli.sh`)
+
+**Gemini CLI** is an AI coding agent that runs in the terminal: it reads and
+edits files in the current directory, runs shell commands, and asks you to
+confirm each step. Installs Node.js 20+ and the CLI from npm.
+
+Global npm packages land in `~/.local` (the script sets `npm config set prefix`),
+so `npm i -g` never needs sudo and updates are just a re-run of the script.
+
+### Get an API key
+
+Authentication is **not** scripted — you paste a key on first run.
+
+1. Open **<https://aistudio.google.com/apikey>** (Google account, no card).
+2. **Create API key** → copy it (`AIza…`).
+3. Run `gemini` in a project directory → `/auth` → **Use Gemini API Key** → paste.
+
+> **Do not enable billing** on that Google Cloud project. Attaching a card
+> converts it to the paid tier and the free quota disappears for good.
+
+Free-tier quota is per model, so pick the right one with `/model`:
+
+| Model | Free requests/day | Good for |
+|---|---|---|
+| **Flash** | ~1500 | everything routine — reading code, boilerplate, logs, docs |
+| **Pro** | ~50 | hard problems only; an agent burns 5–15 requests per task |
+
+> **"Sign in with Google" is dead.** The free Gemini Code Assist tier for
+> individuals was shut down on **2026-06-18** — picking that option fails with
+> *"This client is no longer supported for Gemini Code Assist for individuals"*.
+> The API key path above goes to a different backend and is still free.
+> If AI Studio is blocked in your country, connect a VPN first
+> ([`05-vpn.sh`](05-vpn.sh)).
+
+### Using it
+
+```bash
+cd ~/Projects/fedora-apps
+gemini                      # start a session in this directory
+gemini -p "list every package these scripts install"   # one-shot, no UI
+```
+
+Then just describe the task in plain language — *"explain what 05-vpn.sh does"*,
+*"add a Node.js install to 03-development.sh"*. Every file edit and command needs
+your confirmation.
+
+| Input | What it does |
+|---|---|
+| `@README.md` | pull a specific file into context (Tab completes paths) |
+| `!dnf list installed` | run a shell command directly; bare `!` toggles shell mode |
+| `/help` | list all commands |
+| `/auth` | switch authentication method |
+| `/model` | switch model (use this to stay on Flash) |
+| `/clear` | wipe the context when the agent goes off the rails |
+| `/compress` | summarize history when the context window fills up |
+| `/stats` | tokens and requests used this session |
+| <kbd>Esc</kbd> | interrupt the current answer |
+| <kbd>Ctrl</kbd>+<kbd>C</kbd> ×2 | quit |
+
+### Project context
+
+Drop a `GEMINI.md` in the repo root and it's loaded automatically on every run in
+that directory — the cheapest way to stop the agent guessing your conventions:
+
+```markdown
+# fedora-apps
+
+Numbered bash scripts that set up a fresh Fedora Workstation, run in order.
+
+Rules:
+- bash with `set -euo pipefail`, comments in English
+- everything idempotent: re-running must not break the system
+- dnf for CLI tools, `flatpak --user` for GUI apps
+```
+
+The CLI also asks whether to **trust the folder** on first run in a new
+directory. Trust the specific repo, not the parent `Projects` dir — trust lets it
+load that folder's config, custom commands and MCP servers.
+
+### Qwen Code
+
+The script has a commented-out line for **Qwen Code** (a fork of Gemini CLI with
+prompts tuned for Qwen3-Coder). It's left off on purpose: the free Qwen OAuth
+login was shut down on **2026-04-15**, so it now needs a paid Alibaba *Coding
+Plan* or a third-party provider key. The free fallback is OpenRouter with a
+`:free` model — 50 requests/day, and not Qwen3-Coder. Uncomment the line only if
+you actually have a key.
 
 ---
 
