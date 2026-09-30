@@ -44,6 +44,7 @@ npm install -g @google/gemini-cli
 # --- fish: make sure ~/.local/bin is on the PATH ---
 # Idempotent — fish_add_path skips a path that's already there.
 if command -v fish >/dev/null 2>&1; then
+  # shellcheck disable=SC2016 # expanded by fish, not bash
   fish -c 'contains "$HOME/.local/bin" $PATH; or fish_add_path "$HOME/.local/bin"' || true
 fi
 

@@ -1,0 +1,26 @@
+name: A script fails
+description: A script stops with an error or leaves something half-installed
+labels: [bug]
+body:
+  - type: input
+    id: script
+    attributes:
+      label: Script
+      placeholder: 02-terminal.sh
+    validations:
+      required: true
+  - type: input
+    id: fedora
+    attributes:
+      label: Fedora version
+      description: Output of `rpm -E %fedora`
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: The last lines the script printed, the error included.
+      render: text
+    validations:
+      required: true

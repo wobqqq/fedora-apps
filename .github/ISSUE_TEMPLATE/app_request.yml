@@ -1,0 +1,22 @@
+name: Suggest an app
+description: An app or tool worth adding to one of the groups
+labels: [enhancement]
+body:
+  - type: input
+    id: app
+    attributes:
+      label: App
+    validations:
+      required: true
+  - type: dropdown
+    id: group
+    attributes:
+      label: Group
+      options: [Base, Everyday, Terminal, Development, Games, VPN, AI CLI, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Where it comes from
+      description: Fedora repositories, RPM Fusion, Flathub, or an upstream release (with a checksum?).

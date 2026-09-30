@@ -1,5 +1,11 @@
 # fedora-apps
 
+[![CI](https://github.com/wobqqq/fedora-apps/actions/workflows/ci.yml/badge.svg)](https://github.com/wobqqq/fedora-apps/actions/workflows/ci.yml)
+[![Download links](https://github.com/wobqqq/fedora-apps/actions/workflows/links.yml/badge.svg)](https://github.com/wobqqq/fedora-apps/actions/workflows/links.yml)
+[![Fedora](https://img.shields.io/badge/Fedora-Workstation%20(GNOME)-51a2da?logo=fedora&logoColor=white)](https://fedoraproject.org/workstation/)
+[![ShellCheck](https://img.shields.io/badge/ShellCheck-clean-brightgreen)](Makefile)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Post-install app setup for a fresh **Fedora Workstation (GNOME)**, tuned for a
 backend developer's machine.
 
@@ -368,7 +374,41 @@ you actually have a key.
 
 ---
 
+## What gets installed from where
+
+Nothing is downloaded and run blindly. In order of preference:
+
+| Source | Used for | Trust |
+|---|---|---|
+| **Fedora repositories** | most CLI tools and system packages | signed by Fedora, checked by dnf |
+| **RPM Fusion** (free + nonfree) | VLC, Steam, unrar, full ffmpeg, the NVIDIA driver | signed by RPM Fusion; its release packages come from its own mirrors over HTTPS |
+| **Flathub** (per-user) | GUI apps | signed Flatpak remote |
+| **Vendor repositories** | Cloudflare WARP | signed by the vendor, checked by dnf |
+| **Vendor packages** | Windscribe | the package signature is checked against Windscribe's key before dnf installs it |
+| **Upstream releases** | starship, yazi, lazygit, lazydocker, PhpStorm | the archive is installed only if its SHA-256 matches the checksum the release publishes (`checksums.txt`, a `.sha256` file, or the digest GitHub records) |
+| **extensions.gnome.org** | GNOME Shell extensions | downloaded over HTTPS from the official site; it publishes no checksums |
+| **npm** | Gemini CLI | the npm registry, into `~/.local` (no sudo) |
+
+The GitHub API allows 60 anonymous requests an hour; if a script hits the limit, export a `GITHUB_TOKEN` and run it again.
+
+## Checks
+
+The scripts are checked on every change, in Docker (the host needs only `docker` and `make`):
+
+```bash
+make lint       # ShellCheck + bash -n on every script
+make test       # Bats tests of the shared helpers and the package lists
+make packages   # every dnf package still exists on the latest Fedora (with RPM Fusion)
+make links      # every download, and the checksum it is verified against, still resolves
+```
+
+`make links` also runs every week on GitHub Actions, so a release that renames its assets is noticed before the next install.
+
 ## Requirements
 
 - Fedora Workstation (GNOME) — a fresh install
 - Internet access and sudo privileges
+
+## License
+
+[MIT](LICENSE)

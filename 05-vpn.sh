@@ -31,6 +31,13 @@ trap 'rm -rf "$tmp"' EXIT
 curl -fL --progress-bar -o "$tmp/windscribe.rpm" \
   https://windscribe.com/install/desktop/linux_rpm_x64
 
+# --- Check the package signature against the key imported above ---
+# dnf does not check the signature of a local file by default.
+if ! rpm --checksig "$tmp/windscribe.rpm" | grep 'signatures OK' >/dev/null; then
+  echo "The Windscribe package is not signed by the key imported above — refusing to install it." >&2
+  exit 1
+fi
+
 # --- Install (dnf pulls in the Qt / network dependencies) ---
 # Safe to re-run: if the same version is already installed dnf just says so.
 sudo dnf install -y "$tmp/windscribe.rpm"
