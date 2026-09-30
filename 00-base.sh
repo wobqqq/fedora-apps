@@ -12,7 +12,11 @@
 #   ./00-base.sh
 
 set -euo pipefail
+source "$(dirname "$0")/lib/common.sh"
 sudo -v   # ask for the sudo password once, up front
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
 
 FEDORA_VER=$(rpm -E %fedora)
 
@@ -82,7 +86,7 @@ GNOME_EXTENSIONS=(
   1414   # Unblank                  — keep the screen on / readable while locked
 )
 if command -v gnome-extensions >/dev/null 2>&1; then
-  SHELL_VER=$(gnome-shell --version 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  SHELL_VER=$(gnome-shell --version 2>/dev/null | grep -oE '[0-9]+' | head -1 || true)
   for id in "${GNOME_EXTENSIONS[@]}"; do
     info=$(curl -fsSL "https://extensions.gnome.org/extension-info/?pk=${id}&shell_version=${SHELL_VER}" 2>/dev/null || true)
     uuid=$(echo "$info" | grep -oP '"uuid":\s*"\K[^"]+' || true)
@@ -91,20 +95,14 @@ if command -v gnome-extensions >/dev/null 2>&1; then
       echo "GNOME extension $id not available for shell $SHELL_VER — skipping."
       continue
     fi
-    tmp=$(mktemp -d)
-    curl -fsSL "https://extensions.gnome.org${url}" -o "$tmp/ext.zip"
-    gnome-extensions install --force "$tmp/ext.zip" || true
+    curl -fsSL "https://extensions.gnome.org${url}" -o "$work/ext-${id}.zip"
+    gnome-extensions install --force "$work/ext-${id}.zip" || true
     # Try to enable live; on Wayland a just-installed extension can't be, so queue
     # it in gsettings and GNOME enables it on the next login.
     if ! gnome-extensions enable "$uuid" 2>/dev/null; then
       cur=$(gsettings get org.gnome.shell enabled-extensions 2>/dev/null || echo "[]")
-      case "$cur" in
-        *"$uuid"*)       : ;;
-        "@as []"|"[]")   gsettings set org.gnome.shell enabled-extensions "['$uuid']" ;;
-        *)               gsettings set org.gnome.shell enabled-extensions "${cur%]}, '$uuid']" ;;
-      esac
+      gsettings set org.gnome.shell enabled-extensions "$(gvariant_list_append "$cur" "$uuid")"
     fi
-    rm -rf "$tmp"
     echo "GNOME extension installed: $uuid"
   done
   echo "GNOME extensions ready (active after the next login)."

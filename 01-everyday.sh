@@ -9,6 +9,7 @@
 #   ./01-everyday.sh
 
 set -euo pipefail
+source "$(dirname "$0")/lib/common.sh"
 sudo -v
 
 # --- Apps from the Fedora / RPM Fusion repos ---
@@ -41,18 +42,7 @@ gsettings set org.gnome.shell.keybindings show-screenshot-ui "[]"          2>/de
 gsettings set org.gnome.shell.keybindings screenshot "[]"                   2>/dev/null || true
 gsettings set org.gnome.settings-daemon.plugins.media-keys screenshot "[]"  2>/dev/null || true
 
-# Then add a custom shortcut Print -> `flameshot gui`, appending to the list of
-# custom shortcuts without deleting any you already have.
-MEDIA=org.gnome.settings-daemon.plugins.media-keys
-KEY=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/flameshot/
-existing=$(gsettings get $MEDIA custom-keybindings)
-case "$existing" in
-  *"$KEY"*)        : ;;                                                  # already registered
-  "@as []"|"[]")   gsettings set $MEDIA custom-keybindings "['$KEY']" ;; # list was empty
-  *)               gsettings set $MEDIA custom-keybindings "${existing%]}, '$KEY']" ;;
-esac
-gsettings set "$MEDIA.custom-keybinding:$KEY" name    'Flameshot'
-gsettings set "$MEDIA.custom-keybinding:$KEY" command 'flameshot gui'
-gsettings set "$MEDIA.custom-keybinding:$KEY" binding 'Print'
+# Then add a custom shortcut Print -> `flameshot gui`, keeping the shortcuts you already have.
+add_custom_keybinding flameshot 'Flameshot' 'flameshot gui' 'Print'
 
 echo "Everyday apps installed. Press PrintScreen to test Flameshot."

@@ -39,11 +39,11 @@ FEDORA_VER=$(rpm -E %fedora)
 info "Detected Fedora $FEDORA_VER"
 
 # ---- make sure an NVIDIA card is present ----
-if ! lspci | grep -qi nvidia; then
+if ! lspci | grep -i nvidia >/dev/null; then
     err "No NVIDIA GPU found (lspci). Aborting."
     exit 1
 fi
-ok "NVIDIA GPU found: $(lspci | grep -i nvidia | grep -i vga | sed 's/.*: //')"
+ok "NVIDIA GPU found: $(lspci | grep -iE 'nvidia' | grep -iE 'vga|3d' | sed 's/.*: //' | head -1)"
 
 # ---- check Secure Boot ----
 if command -v mokutil &>/dev/null; then
@@ -108,7 +108,7 @@ else
     ok "Created $BL"
 fi
 # kernel parameter — safety net for early boot
-if grubby --info=DEFAULT | grep -q "modprobe.blacklist=nouveau"; then
+if [[ $(grubby --info=DEFAULT) == *"modprobe.blacklist=nouveau"* ]]; then
     ok "Kernel parameter already set"
 else
     grubby --update-kernel=ALL --args="rd.driver.blacklist=nouveau modprobe.blacklist=nouveau"

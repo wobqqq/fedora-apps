@@ -11,7 +11,11 @@
 #   ./02-terminal.sh
 
 set -euo pipefail
+source "$(dirname "$0")/lib/common.sh"
 sudo -v
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
 
 # --- Shell, terminal and modern CLI tools from the Fedora repos ---
 sudo dnf install -y \
@@ -35,33 +39,28 @@ gsettings set org.gnome.desktop.default-applications.terminal exec-arg '-x'  2>/
 sudo alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/ptyxis 50 2>/dev/null || true
 sudo alternatives --set x-terminal-emulator /usr/bin/ptyxis 2>/dev/null || true
 # GNOME's built-in Ctrl+Alt+T is hard-wired to gnome-terminal, so add a custom
-# shortcut (appending to the list without clobbering existing ones).
-MEDIA=org.gnome.settings-daemon.plugins.media-keys
-KEY=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/ptyxis/
-existing=$(gsettings get $MEDIA custom-keybindings)
-case "$existing" in
-  *"$KEY"*)        : ;;
-  "@as []"|"[]")   gsettings set $MEDIA custom-keybindings "['$KEY']" ;;
-  *)               gsettings set $MEDIA custom-keybindings "${existing%]}, '$KEY']" ;;
-esac
-gsettings set "$MEDIA.custom-keybinding:$KEY" name    'Ptyxis'
-gsettings set "$MEDIA.custom-keybinding:$KEY" command 'ptyxis --new-window'
-gsettings set "$MEDIA.custom-keybinding:$KEY" binding '<Control><Alt>t'
+# shortcut, keeping the ones you already have.
+add_custom_keybinding ptyxis 'Ptyxis' 'ptyxis --new-window' '<Control><Alt>t'
 
-# --- Starship prompt (not in the Fedora repos: install the official binary) ---
+# --- Starship prompt (not in the Fedora repos: the official release binary) ---
+# The same binary starship.rs/install.sh fetches, checked against the .sha256 the release publishes.
 if ! command -v starship >/dev/null 2>&1; then
-  curl -fsSL https://starship.rs/install.sh | sudo sh -s -- --yes --bin-dir /usr/local/bin
+  asset="starship-x86_64-unknown-linux-musl.tar.gz"
+  base="https://github.com/starship/starship/releases/latest/download"
+  download_verified "$base/$asset" "$work/$asset" "$(curl -fsSL "$base/$asset.sha256" | tr -d '[:space:]')"
+  tar -xzf "$work/$asset" -C "$work" starship
+  sudo install -m755 "$work/starship" /usr/local/bin/starship
 fi
 
-# --- yazi file manager (not in the Fedora repos: install the release binary) ---
+# --- yazi file manager (not in the Fedora repos: the release binary) ---
+# yazi publishes no checksum file; GitHub records a SHA-256 for every release asset.
 if ! command -v yazi >/dev/null 2>&1; then
-  YAZI_VER=$(curl -fsSL https://api.github.com/repos/sxyazi/yazi/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+')
+  YAZI_VER=$(github_latest_tag sxyazi/yazi)
   asset="yazi-x86_64-unknown-linux-gnu"
-  tmp=$(mktemp -d)
-  curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VER}/${asset}.zip" -o "$tmp/yazi.zip"
-  unzip -q "$tmp/yazi.zip" -d "$tmp"
-  sudo install -m755 "$tmp/${asset}/yazi" "$tmp/${asset}/ya" /usr/local/bin/
-  rm -rf "$tmp"
+  download_verified "https://github.com/sxyazi/yazi/releases/download/${YAZI_VER}/${asset}.zip" \
+    "$work/yazi.zip" "$(github_asset_sha256 sxyazi/yazi "$YAZI_VER" "${asset}.zip")"
+  unzip -q "$work/yazi.zip" -d "$work"
+  sudo install -m755 "$work/${asset}/yazi" "$work/${asset}/ya" /usr/local/bin/
 fi
 
 # --- yazi rich text previews: Markdown -> glow, JSON -> jq, YAML -> yq ---
