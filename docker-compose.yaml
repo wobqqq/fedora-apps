@@ -1,0 +1,34 @@
+x-repo: &repo
+  volumes:
+    - .:/repo
+  working_dir: /repo
+
+services:
+  shellcheck:
+    <<: *repo
+    image: koalaman/shellcheck:stable
+    profiles: [checks]
+
+  bash:
+    <<: *repo
+    image: bash:5
+    profiles: [checks]
+
+  bats:
+    <<: *repo
+    image: bats/bats:latest
+    profiles: [checks]
+
+  fedora:
+    <<: *repo
+    image: fedora:latest
+    profiles: [checks]
+
+  tools:
+    <<: *repo
+    image: fedora-apps-tools:latest
+    build:
+      context: docker/tools
+    environment:
+      - GITHUB_TOKEN
+    profiles: [checks]

@@ -7,7 +7,7 @@ Guidance for AI coding agents (Claude Code, Gemini CLI, Codex, Cursor) working i
 Post-install setup for a fresh **Fedora Workstation (GNOME)** on a backend
 developer's laptop. Not an application — a set of numbered bash scripts meant to
 be **read and understood**, or copy-pasted piecemeal, as much as executed. The
-checks run in Docker (`make`), the host needs only `docker` and `make`.
+checks run in Docker (`make`), the host needs only Docker with Compose and `make`; the images are listed in `docker-compose.yaml`.
 
 ## Commands
 

@@ -1,22 +1,22 @@
 SHELL := /bin/bash
 
 SCRIPTS := $(wildcard *.sh) $(wildcard predator-pt316-51s/*.sh) $(wildcard lib/*.sh) $(wildcard tools/*.sh)
-RUN := docker run --rm -v "$(CURDIR)":/repo -w /repo
+RUN := docker compose run --rm --quiet-pull
 
 .PHONY: lint test links packages ready
 
 lint:
-	$(RUN) koalaman/shellcheck:stable -x -S style $(SCRIPTS)
-	$(RUN) bash:5 sh -c 'for f in $(SCRIPTS); do bash -n "$$f" || exit 1; done'
+	$(RUN) shellcheck -x -S style $(SCRIPTS)
+	$(RUN) bash sh -c 'for f in $(SCRIPTS); do bash -n "$$f" || exit 1; done'
 
 test:
-	$(RUN) bats/bats:latest tests
+	$(RUN) bats tests
 
 links:
-	docker build -q -t fedora-apps-tools docker/tools >/dev/null
-	$(RUN) -e GITHUB_TOKEN fedora-apps-tools tools/check-links.sh
+	docker compose build -q tools
+	$(RUN) tools tools/check-links.sh
 
 packages:
-	$(RUN) fedora:latest tools/check-packages.sh
+	$(RUN) fedora tools/check-packages.sh
 
 ready: lint test

@@ -393,7 +393,7 @@ The GitHub API allows 60 anonymous requests an hour; if a script hits the limit,
 
 ## Checks
 
-The scripts are checked on every change, in Docker (the host needs only `docker` and `make`):
+The scripts are checked on every change, in Docker (the host needs only Docker with Compose and `make`; the images are listed in `docker-compose.yaml`):
 
 ```bash
 make lint       # ShellCheck + bash -n on every script
