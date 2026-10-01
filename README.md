@@ -402,7 +402,7 @@ make packages   # every dnf package still exists on the latest Fedora (with RPM 
 make links      # every download, and the checksum it is verified against, still resolves
 ```
 
-`make links` also runs every week on GitHub Actions, so a release that renames its assets is noticed before the next install.
+`make links` also runs on GitHub Actions for every pull request that touches the scripts, and by hand from the Actions tab.
 
 ## Requirements
 
