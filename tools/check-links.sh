@@ -48,6 +48,12 @@ for spec in 'jesseduffield/lazygit lazygit_{version}_linux_x86_64.tar.gz' 'jesse
   need "$asset checksum" "$(curl -fsSL "https://github.com/$repo/releases/download/$tag/checksums.txt" | checksum_for "$asset" || true)"
 done
 
+tag=$(github_latest_tag sinelaw/fresh || true)
+need "fresh latest release" "$tag"
+rpm="fresh-editor-${tag#v}-1.x86_64.rpm"
+check "$rpm" "https://github.com/sinelaw/fresh/releases/download/$tag/$rpm"
+need "$rpm checksum" "$(curl -fsSL "https://github.com/sinelaw/fresh/releases/download/$tag/$rpm.sha256" | checksum_for "$rpm" || true)"
+
 release=$(curl -fsSL "https://data.services.jetbrains.com/products/releases?code=PS&latest=true&type=release")
 check "PhpStorm" "$(jq -r '.PS[0].downloads.linux.link' <<<"$release")"
 check "PhpStorm checksum" "$(jq -r '.PS[0].downloads.linux.checksumLink' <<<"$release")"
