@@ -21,6 +21,7 @@ can run — or just copy-paste from — one group at a time**:
 | [`04-games.sh`](04-games.sh) | **Games** | Steam + GameMode |
 | [`05-vpn.sh`](05-vpn.sh) | **VPN** | Windscribe client (GUI + CLI), Cloudflare WARP (CLI) |
 | [`06-gemini-cli.sh`](06-gemini-cli.sh) | **AI CLI** | Node.js + Gemini CLI (AI coding agent in the terminal) |
+| [`07-fresh-editor.sh`](07-fresh-editor.sh) | **Editor** | Fresh terminal editor, fish in its terminal, set as `$EDITOR` |
 
 ## Quick start
 
@@ -37,6 +38,7 @@ chmod +x *.sh
 ./04-games.sh         # Steam
 ./05-vpn.sh           # Windscribe + Cloudflare WARP
 ./06-gemini-cli.sh    # Node.js + Gemini CLI
+./07-fresh-editor.sh  # Fresh terminal editor
 ```
 
 Run them as your **normal user** (not with sudo) — each script calls `sudo`
@@ -374,6 +376,39 @@ you actually have a key.
 
 ---
 
+## Editor (`07-fresh-editor.sh`)
+
+**Fresh** is a terminal text editor with ordinary keys (<kbd>Ctrl</kbd>+<kbd>S</kbd>,
+<kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd>, mouse, multiple cursors) — no modes to
+learn — plus a file explorer, LSP, git, splits and an integrated terminal.
+
+```bash
+fresh app.py          # open a file
+fresh .               # open the project (file explorer on the left)
+fresh -a              # daemon mode: Ctrl+Shift+D detaches, `fresh -a` reattaches
+```
+
+| Key | What it does |
+|---|---|
+| <kbd>Ctrl</kbd>+<kbd>P</kbd> | command palette — every command, searchable |
+| <kbd>Alt</kbd>+<kbd>`</kbd> | terminal in the bottom dock |
+| <kbd>Ctrl</kbd>+<kbd>Space</kbd> | terminal ↔ scrollback (scroll, search, copy output) |
+| <kbd>F9</kbd> | send *all* keys to the terminal (e.g. <kbd>Ctrl</kbd>+<kbd>P</kbd> to fish) |
+
+The integrated terminal runs **fish** with your prompt and aliases: the script
+sets `terminal.shell` in `~/.config/fresh/config.json` rather than relying on
+`$SHELL`, which is still `bash` when Fresh starts from a bash session or an IDE.
+Other settings in that file are kept.
+
+Fresh is also the default **`$EDITOR` / `$VISUAL`** in bash and fish, so `git
+commit`, `sudoedit` and `crontab -e` open it. Back to nano: delete
+`/etc/profile.d/fresh-editor.sh` and `/etc/fish/conf.d/fresh-editor.fish`.
+
+> **Updates:** Fresh has no dnf repo — re-run `./07-fresh-editor.sh`; it only
+> downloads the RPM when GitHub has a newer release.
+
+---
+
 ## What gets installed from where
 
 Nothing is downloaded and run blindly. In order of preference:
@@ -385,7 +420,7 @@ Nothing is downloaded and run blindly. In order of preference:
 | **Flathub** (per-user) | GUI apps | signed Flatpak remote |
 | **Vendor repositories** | Cloudflare WARP | signed by the vendor, checked by dnf |
 | **Vendor packages** | Windscribe | the package signature is checked against Windscribe's key before dnf installs it |
-| **Upstream releases** | starship, yazi, lazygit, lazydocker, PhpStorm | the archive is installed only if its SHA-256 matches the checksum the release publishes (`checksums.txt`, a `.sha256` file, or the digest GitHub records) |
+| **Upstream releases** | starship, yazi, lazygit, lazydocker, Fresh, PhpStorm | the archive is installed only if its SHA-256 matches the checksum the release publishes (`checksums.txt`, a `.sha256` file, or the digest GitHub records) |
 | **extensions.gnome.org** | GNOME Shell extensions | downloaded over HTTPS from the official site; it publishes no checksums |
 | **npm** | Gemini CLI | the npm registry, into `~/.local` (no sudo) |
 

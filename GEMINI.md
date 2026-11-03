@@ -30,6 +30,7 @@ The repository contains modular setup scripts and hardware-specific configuratio
 | [`04-games.sh`](04-games.sh) | **Games** | Installs Steam and GameMode. Provides hybrid-GPU launch configurations. |
 | [`05-vpn.sh`](05-vpn.sh) | **VPN** | Installs Windscribe (GUI + CLI) and Cloudflare WARP (CLI). They manage their own firewall rules and cannot be run concurrently. |
 | [`06-gemini-cli.sh`](06-gemini-cli.sh) | **AI CLI** | Node.js + Gemini CLI, with npm's global prefix in `~/.local`. |
+| [`07-fresh-editor.sh`](07-fresh-editor.sh) | **Editor** | Fresh terminal editor (verified GitHub release RPM), fish in its integrated terminal, set as `$EDITOR`/`$VISUAL`. |
 | [`predator-pt316-51s/`](predator-pt316-51s/) | **Hardware** | Custom configuration for the Acer Predator Triton 300 SE laptop, including `install-nvidia.sh` (proprietary driver + CUDA) and `nvidia-cheatsheet.md` for GPU monitoring and troubleshooting. |
 
 ---
@@ -49,6 +50,7 @@ chmod +x *.sh
 ./04-games.sh         # Steam & GameMode
 ./05-vpn.sh           # Windscribe & Cloudflare WARP setup
 ./06-gemini-cli.sh    # Node.js + Gemini CLI
+./07-fresh-editor.sh  # Fresh terminal editor
 ```
 
 *Note: Log out and back in after running `00-base.sh` and `02-terminal.sh` for shells, default terminals, GNOME extensions, and Flatpak icons to load properly.*
