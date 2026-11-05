@@ -23,6 +23,7 @@ sudo dnf install -y \
 # --- Apps from Flathub (per-user, no password prompts) ---
 flatpak install -y --user flathub \
   com.google.Chrome \
+  com.ulduzsoft.Birdtray \
   org.telegram.desktop \
   com.github.IsmaelMartinez.teams_for_linux \
   org.gnome.gitlab.somas.Apostrophe
