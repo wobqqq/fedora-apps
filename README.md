@@ -75,7 +75,6 @@ Foundation for everything else. Not apps, but the setup they depend on:
 |---|---|
 | **Google Chrome** *(Flatpak)* | Web browser — set as the default |
 | **Thunderbird** | Email client (IMAP/SMTP, calendar, contacts) |
-| **Birdtray** *(Flatpak)* | Tray icon for Thunderbird: unread count, hide/show the window |
 | **Telegram** *(Flatpak)* | Messenger |
 | **Teams for Linux** *(Flatpak)* | Unofficial MS Teams client |
 | **VLC** | Universal video player — set as the default for video |
@@ -91,11 +90,6 @@ Foundation for everything else. Not apps, but the setup they depend on:
 
 **Flameshot:** press <kbd>PrintScreen</kbd> to start a region capture (annotate,
 arrow, blur, then copy or save).
-
-**Birdtray:** Thunderbird on Linux has no tray icon of its own. Start Birdtray
-(from the app menu, after a logout for Flatpak apps), then in its settings add the
-mail folders to watch and tick *Start Thunderbird* / *Hide Thunderbird when
-minimized* as you like; enable *Start Birdtray at login* to keep it running.
 
 ---
 
