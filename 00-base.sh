@@ -29,7 +29,7 @@ sudo dnf install -y \
 sudo dnf upgrade --refresh -y
 
 # --- Remove preinstalled apps you don't use ---
-sudo dnf remove -y chromium thunderbird || true
+sudo dnf remove -y chromium || true
 sudo dnf autoremove -y || true
 
 # --- Full ffmpeg (codecs) ---

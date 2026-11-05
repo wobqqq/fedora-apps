@@ -28,7 +28,7 @@ is `predator-pt316-51s/install-nvidia.sh`, which requires root and exits if
 `$EUID -ne 0`.
 
 **Do not run these scripts to verify an edit.** They upgrade the whole system,
-remove packages (`chromium`, `thunderbird`), swap `ffmpeg-free`, replace
+remove packages (`chromium`), swap `ffmpeg-free`, replace
 `firewalld` with `ufw`, change the default login shell, and write to
 `/etc/profile.d` and `/etc/fish/conf.d`. Verify with `make ready` and by reading.
 

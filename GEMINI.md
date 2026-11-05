@@ -23,8 +23,8 @@ The repository contains modular setup scripts and hardware-specific configuratio
 
 | Script / Directory | Group | Description |
 |---|---|---|
-| [`00-base.sh`](00-base.sh) | **Base** | Enablers (RPM Fusion, Flathub), system upgrade, removes preinstalled bloat (`chromium`, `thunderbird`), full ffmpeg codec swap, ufw firewall setup, SSH key creation, HiDPI desktop tweaks, and core GNOME Shell extensions. |
-| [`01-everyday.sh`](01-everyday.sh) | **Everyday** | Installs standard GUI apps (VLC, Chrome, Telegram, KeePassXC, GIMP, Xournal++, etc.), configures default MIME types, and binds **Flameshot** to the PrintScreen key. |
+| [`00-base.sh`](00-base.sh) | **Base** | Enablers (RPM Fusion, Flathub), system upgrade, removes preinstalled bloat (`chromium`), full ffmpeg codec swap, ufw firewall setup, SSH key creation, HiDPI desktop tweaks, and core GNOME Shell extensions. |
+| [`01-everyday.sh`](01-everyday.sh) | **Everyday** | Installs standard GUI apps (VLC, Chrome, Thunderbird, Telegram, KeePassXC, GIMP, Xournal++, etc.), configures default MIME types, and binds **Flameshot** to the PrintScreen key. |
 | [`02-terminal.sh`](02-terminal.sh) | **Terminal** | Customizes terminal with **fish** as default, **Ptyxis** terminal (Ctrl+Alt+T), **Starship** prompt, modern CLI utilities (`ripgrep`, `fd`, `bat`, `eza`, `zoxide`, `direnv`, `btop`, `ncdu`, `tmux`, `jq`, `yq`), and **yazi** file manager (with rich media and file previews). |
 | [`03-development.sh`](03-development.sh) | **Development** | Installs backend dev tools: `httpie`, `mycli`, `pgcli`, `wireshark` (runs without root), `lazygit`, `lazydocker`, VS Code (Flatpak), DBeaver (Flatpak), Bruno (Flatpak), PhpStorm (installed to `/opt`), and opens firewall port `9003` for Docker-to-host Xdebug connection. |
 | [`04-games.sh`](04-games.sh) | **Games** | Installs Steam and GameMode. Provides hybrid-GPU launch configurations. |
