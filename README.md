@@ -15,7 +15,7 @@ can run — or just copy-paste from — one group at a time**:
 | Script | Group | What it installs |
 |---|---|---|
 | [`00-base.sh`](00-base.sh) | **Base** (run first) | RPM Fusion, Flathub, system upgrade, core utils, firewall, SSH key, desktop tweaks |
-| [`01-everyday.sh`](01-everyday.sh) | **Everyday** | Browser, mail, chat, media players, image tools, files, password manager, screenshots |
+| [`01-everyday.sh`](01-everyday.sh) | **Everyday** | Browser, chat, media players, image tools, files, password manager, screenshots |
 | [`02-terminal.sh`](02-terminal.sh) | **Terminal** | fish, Ptyxis, Starship, modern CLI tools, yazi file manager |
 | [`03-development.sh`](03-development.sh) | **Development** | HTTP/DB clients, lazygit/lazydocker, VS Code, DBeaver, Bruno, PhpStorm |
 | [`04-games.sh`](04-games.sh) | **Games** | Steam + GameMode |
@@ -53,7 +53,7 @@ itself when it needs to. Every script is independent and safe to re-run.
 Foundation for everything else. Not apps, but the setup they depend on:
 
 - **RPM Fusion** (free + nonfree) — needed for VLC, Steam, unrar, full ffmpeg
-- **Full system upgrade** and removal of preinstalled bloat (`chromium`)
+- **Full system upgrade** and removal of preinstalled bloat (`chromium`, `thunderbird`)
 - **Full ffmpeg** — swaps Fedora's stripped `ffmpeg-free` for full codecs
 - **Core utilities** — `wget curl git make`, `zip unzip unrar`, `openssh-clients`
 - **Flathub** remote for Flatpak apps
@@ -74,7 +74,6 @@ Foundation for everything else. Not apps, but the setup they depend on:
 | App | What it is |
 |---|---|
 | **Google Chrome** *(Flatpak)* | Web browser — set as the default |
-| **Thunderbird** | Email client (IMAP/SMTP, calendar, contacts) |
 | **Telegram** *(Flatpak)* | Messenger |
 | **Teams for Linux** *(Flatpak)* | Unofficial MS Teams client |
 | **VLC** | Universal video player — set as the default for video |

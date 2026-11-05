@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # 01-everyday.sh — everyday desktop apps.
-# Browser, mail, chat, media players, image tools, files, password manager, screenshots.
+# Browser, chat, media players, image tools, files, password manager, screenshots.
 # Also sets sensible default apps and puts Flameshot on the PrintScreen key.
 #
 # Needs RPM Fusion + Flathub — run ./00-base.sh first.
@@ -16,7 +16,6 @@ sudo -v
 sudo dnf install -y \
   vlc audacious \
   gthumb gimp xournalpp \
-  thunderbird \
   keepassxc filezilla transmission \
   flameshot
 
