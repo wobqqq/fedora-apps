@@ -77,3 +77,17 @@ download_verified() {
   curl -fsSL "$1" -o "$2"
   verify_sha256 "$2" "$3"
 }
+
+# Set KEY=VALUE in a key=value config file such as VLC's vlcrc: the line is
+# uncommented and replaced if present, appended otherwise; the file is created if missing.
+#   set_config_line ~/.config/vlc/vlcrc aout alsa
+set_config_line() {
+  local file=$1 key=$2 value=$3
+  mkdir -p "$(dirname "$file")"
+  touch "$file"
+  if grep -Eq "^#?${key}=" "$file"; then
+    sed -i -E "s|^#?${key}=.*|${key}=${value}|" "$file"
+  else
+    printf '%s=%s\n' "$key" "$value" >> "$file"
+  fi
+}

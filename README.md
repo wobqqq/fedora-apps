@@ -92,6 +92,14 @@ Foundation for everything else. Not apps, but the setup they depend on:
 **Flameshot:** press <kbd>PrintScreen</kbd> to start a region capture (annotate,
 arrow, blur, then copy or save).
 
+**VLC:** the script sets the ALSA audio output, turns off audio time-stretch and
+hardware video decoding, and raises the file cache to 1500 ms, so the sound no
+longer disappears after seeking with the arrow keys. Change them back in
+**Tools → Preferences** (<kbd>Ctrl</kbd>+<kbd>P</kbd>): *Audio → Output module*,
+*Input / Codecs → Hardware-accelerated decoding*; time-stretch and the cache are
+under *Show settings: All*. Close VLC before running the script — it rewrites
+its settings file on exit.
+
 ---
 
 ## Terminal (`02-terminal.sh`)
