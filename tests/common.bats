@@ -66,3 +66,21 @@ LIST
   run verify_sha256 "$BATS_TEST_TMPDIR/file" "not-a-hash"
   [ "$status" -ne 0 ]
 }
+
+@test "a commented config line is uncommented and set" {
+  printf '[core]\n#aout=\n#file-caching=1000\n' > "$BATS_TEST_TMPDIR/vlcrc"
+  set_config_line "$BATS_TEST_TMPDIR/vlcrc" aout alsa
+  [ "$(cat "$BATS_TEST_TMPDIR/vlcrc")" = "$(printf '[core]\naout=alsa\n#file-caching=1000')" ]
+}
+
+@test "a config line already set is replaced, not duplicated" {
+  printf 'aout=pulse\n' > "$BATS_TEST_TMPDIR/vlcrc"
+  set_config_line "$BATS_TEST_TMPDIR/vlcrc" aout alsa
+  set_config_line "$BATS_TEST_TMPDIR/vlcrc" aout alsa
+  [ "$(cat "$BATS_TEST_TMPDIR/vlcrc")" = "aout=alsa" ]
+}
+
+@test "a missing config file is created with the line" {
+  set_config_line "$BATS_TEST_TMPDIR/new/vlcrc" audio-time-stretch 0
+  [ "$(cat "$BATS_TEST_TMPDIR/new/vlcrc")" = "audio-time-stretch=0" ]
+}

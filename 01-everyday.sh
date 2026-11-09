@@ -36,6 +36,16 @@ xdg-mime default audacious.desktop \
   audio/mpeg audio/flac audio/x-flac audio/x-wav audio/wav \
   audio/ogg audio/x-vorbis+ogg audio/mp4 audio/aac audio/x-aac audio/opus 2>/dev/null || true
 
+# --- VLC: keep the sound when seeking ---
+# Through PipeWire's PulseAudio layer VLC 3 often goes silent after seeking with
+# the arrow keys; the ALSA output (pipewire-alsa) and no time-stretch keep it.
+# Software video decoding and a larger file cache keep audio and video in step after a jump.
+vlcrc="$HOME/.config/vlc/vlcrc"
+set_config_line "$vlcrc" aout alsa
+set_config_line "$vlcrc" audio-time-stretch 0
+set_config_line "$vlcrc" avcodec-hw none
+set_config_line "$vlcrc" file-caching 1500
+
 # --- Put Flameshot on the PrintScreen key ---
 # First free the key from GNOME's built-in screenshot tool (it otherwise wins).
 gsettings set org.gnome.shell.keybindings show-screenshot-ui "[]"          2>/dev/null || true
